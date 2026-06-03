@@ -6,9 +6,15 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
+import { useAuth } from './contexts/AuthContext';
+import { AuthScreen } from './components/AuthScreen';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="text-text-p p-8">Loading...</div>;
+  if (!user) return <AuthScreen />;
 
   return (
     <div className="flex bg-bg-app min-h-screen">
