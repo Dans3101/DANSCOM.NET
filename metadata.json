@@ -1,0 +1,6 @@
+{
+  "name": "DANSCOM.NET",
+  "description": "Global eSIM marketplace and telecommunications platform featuring real-time usage monitoring and AI-powered plan recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
