@@ -1,50 +1,84 @@
-import { LayoutDashboard, ShoppingCart, Smartphone, BarChart2, Phone, CreditCard, User, Briefcase, Users, Gift, HelpCircle, Settings, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Smartphone, BarChart2, Phone, CreditCard, User, Briefcase, Users, Gift, HelpCircle, Settings, Sun, Moon, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 export const Sidebar = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (itemName: string) => {
+    setExpandedItems(prev => ({ ...prev, [itemName]: !prev[itemName] }));
+  };
+
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Marketplace', icon: ShoppingCart },
-    { name: 'My eSIMs', icon: Smartphone },
-    { name: 'Usage', icon: BarChart2 },
-    { name: 'Calls & SMS', icon: Phone },
-    { name: 'Payments', icon: CreditCard },
-    { name: 'Profile', icon: User },
-    { name: 'Business', icon: Briefcase },
-    { name: 'Team', icon: Users },
-    { name: 'Referrals', icon: Gift },
+    { 
+      name: 'Marketplace', icon: ShoppingCart, subItems: ['Available eSIM plans', 'Country plans', 'Regional plans', 'Global plans', 'Featured offers', 'Search and filter', 'Plan comparison'] 
+    },
+    { 
+      name: 'My eSIMs', icon: Smartphone, subItems: ['Active eSIMs', 'Expired eSIMs', 'Installation QR codes', 'ICCID details', 'Data remaining', 'Expiry dates', 'Rename eSIM', 'Delete eSIM'] 
+    },
+    { 
+      name: 'Usage', icon: BarChart2, subItems: ['Daily consumption', 'Weekly report', 'Monthly report', 'Real-time tracking', 'Country-wise usage', 'Usage charts'] 
+    },
+    { 
+      name: 'Calls & SMS', icon: Phone, subItems: ['Virtual numbers', 'SMS history', 'Call history', 'Buy phone numbers', 'Voicemail', 'Call forwarding', 'SMS packages'] 
+    },
+    { 
+      name: 'Payments', icon: CreditCard, subItems: ['Wallet balance', 'Deposit funds', 'Withdraw funds', 'Payment history', 'Invoices', 'Subscription payments', 'Saved methods'] 
+    },
+    { 
+      name: 'Profile', icon: User, subItems: ['Personal info', 'Profile photo', 'Email verification', 'Phone verification', 'Security', 'Password change', 'Language', 'Notifications'] 
+    },
+    { 
+      name: 'Business', icon: Briefcase, subItems: ['Account management', 'Company profile', 'Bulk eSIM purchases', 'Team management', 'Business invoices', 'API access', 'Expense tracking', 'Corporate plans'] 
+    },
+    { 
+      name: 'Team', icon: Users, subItems: ['Invite members', 'Assign roles', 'Permissions', 'Activity logs', 'User access', 'Team performance'] 
+    },
+    { 
+      name: 'Referrals', icon: Gift, subItems: ['Referral link', 'Referral code', 'Earnings', 'Commission history', 'Referral statistics', 'Payout requests', 'Marketing materials'] 
+    },
+    { 
+      name: 'Support', icon: HelpCircle, subItems: ['Live chat', 'Ticket system', 'Knowledge base', 'FAQs', 'Contact support', 'System status', 'Feature requests'] 
+    },
+    { 
+      name: 'Settings', icon: Settings, subItems: ['General', 'Security', '2FA', 'Theme', 'API', 'Notifications', 'Privacy', 'Device management', 'Connected accounts'] 
+    },
   ];
 
   return (
-    <div className="w-64 bg-black text-white min-h-screen p-6 flex flex-col border-r border-border-custom">
+    <div className="w-64 bg-black text-white min-h-screen p-6 flex flex-col border-r border-border-custom overflow-y-auto">
       <div className="flex items-center gap-2 mb-10">
         <h1 className="text-xl font-bold text-text-p tracking-wide">DANSCOM.NET</h1>
       </div>
       <nav className="flex flex-col gap-1 flex-1">
         {navItems.map(item => (
-          <button
-            key={item.name}
-            onClick={() => onTabChange(item.name)}
-            className={`flex items-center gap-3 text-left px-4 py-3 rounded-lg text-sm transition-all duration-200 ${activeTab === item.name ? 'bg-accent/10 text-accent' : 'text-text-s hover:text-text-p'}`}
-          >
-            <item.icon size={18} />
-            {item.name}
-          </button>
+          <div key={item.name}>
+            <button
+              onClick={() => {
+                if (item.subItems) toggleExpand(item.name);
+                else onTabChange(item.name);
+              }}
+              className={`flex w-full items-center justify-between gap-3 text-left px-4 py-3 rounded-lg text-sm transition-all duration-200 ${activeTab === item.name ? 'bg-accent/10 text-accent' : 'text-text-s hover:text-text-p'}`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon size={18} />
+                {item.name}
+              </div>
+              {item.subItems && (
+                expandedItems[item.name] ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+              )}
+            </button>
+            {item.subItems && expandedItems[item.name] && (
+              <div className="pl-10 flex flex-col gap-1 mt-1">
+                {item.subItems.map(sub => (
+                  <button key={sub} onClick={() => onTabChange(sub)} className="text-left text-xs text-text-s hover:text-text-p py-2">
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
-        <div className="mt-8 border-t border-border-custom pt-8 flex flex-col gap-1">
-          {['Support', 'Settings'].map(tab => {
-            const Icon = tab === 'Support' ? HelpCircle : Settings;
-            return (
-              <button
-                key={tab}
-                onClick={() => onTabChange(tab)}
-                className={`flex items-center gap-3 text-left px-4 py-3 rounded-lg text-sm transition-all duration-200 ${activeTab === tab ? 'bg-accent/10 text-accent' : 'text-text-s hover:text-text-p'}`}
-              >
-                <Icon size={18} />
-                {tab}
-              </button>
-            )
-          })}
-        </div>
       </nav>
 
       <div className="mt-8 bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl p-4 text-center">

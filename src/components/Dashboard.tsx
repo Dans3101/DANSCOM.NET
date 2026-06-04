@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Header } from './dashboard/Header';
 import { StatsRow } from './dashboard/StatsRow';
 import { BannerActions } from './dashboard/BannerActions';
+import { MyESIMsList } from './dashboard/MyESIMsList';
+import { DataUsageMonitor } from './dashboard/DataUsageMonitor';
+import { RecentTransactions } from './dashboard/RecentTransactions';
 
 export const Dashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -20,11 +23,13 @@ export const Dashboard = () => {
       <div className="text-text-p">
         <h2 className="text-3xl font-medium mb-6">Welcome back, User 👋</h2>
         <StatsRow stats={data.stats} />
-        <BannerActions />
+        <BannerActions quickActions={data.quickActions} />
+        
         <div className="grid grid-cols-2 gap-6">
-            <div className="bg-bg-card p-6 rounded-xl border border-border-custom h-64 text-sm text-text-s">My eSIMs (List component todo)</div>
-            <div className="bg-bg-card p-6 rounded-xl border border-border-custom h-64 text-sm text-text-s">Data Usage Chart (Recharts todo)</div>
+            <MyESIMsList esims={data.esims} />
+            <DataUsageMonitor esimId={data.esims[0].id} />
         </div>
+        <RecentTransactions transactions={data.recentTransactions} />
       </div>
     </div>
   );

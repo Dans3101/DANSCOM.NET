@@ -1,11 +1,12 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User, FacebookAuthProvider } from 'firebase/auth';
+import { auth, googleProvider, facebookProvider } from '../lib/firebase';
 
-const AuthContext = createContext<{ user: User | null; loading: boolean; signInWithGoogle: () => Promise<void>; logOut: () => Promise<void> }>({
+const AuthContext = createContext<{ user: User | null; loading: boolean; signInWithGoogle: () => Promise<void>; signInWithFacebook: () => Promise<void>; logOut: () => Promise<void> }>({
   user: null,
   loading: true,
   signInWithGoogle: async () => {},
+  signInWithFacebook: async () => {},
   logOut: async () => {},
 });
 
@@ -22,8 +23,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    await signInWithPopup(auth, googleProvider);
+  };
+  
+  const signInWithFacebook = async () => {
+    await signInWithPopup(auth, facebookProvider);
   };
 
   const logOut = async () => {
@@ -31,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithFacebook, logOut }}>
       {children}
     </AuthContext.Provider>
   );

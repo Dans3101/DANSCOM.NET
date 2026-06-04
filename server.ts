@@ -15,6 +15,20 @@ async function startServer() {
         { id: '2', country: 'United States', data: 2.1, total: 5, validity: '15 Days', status: 'Active', expiry: '2025-06-09' },
         { id: '3', country: 'Turkey', data: 1.2, total: 3, validity: '7 Days', status: 'Active', expiry: '2025-06-04' },
       ],
+      quickActions: [
+        { id: '1', name: 'Buy eSIM' },
+        { id: '2', name: 'Top Up' },
+        { id: '3', name: 'Send eSIM' },
+        { id: '4', name: 'Add Number' },
+        { id: '5', name: 'Help Center' },
+        { id: '6', name: 'Invite Friends' },
+      ],
+      dataUsage: [
+        { name: 'France', value: 7.2 },
+        { name: 'United States', value: 2.1 },
+        { name: 'Turkey', value: 1.2 },
+        { name: 'Other', value: 2.0 },
+      ],
       recentTransactions: [
         { id: '1', title: 'eSIM - France 10GB', date: '2025-05-10', amount: -22.90, status: 'Completed' },
         { id: '2', title: 'Top Up Wallet', date: '2025-05-09', amount: 50.00, status: 'Completed' },

@@ -14,12 +14,28 @@
         "phoneNumber": { "type": "string" }
       },
       "required": ["userId", "email"]
+    },
+    "ESIMUsage": {
+      "title": "eSIM Usage",
+      "description": "Real-time eSIM data usage",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "esimId": { "type": "string" },
+        "consumedDataGB": { "type": "number" },
+        "totalDataGB": { "type": "number" }
+      },
+      "required": ["userId", "esimId", "consumedDataGB", "totalDataGB"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "UserProfile",
       "description": "User profile document"
+    },
+    "/users/{userId}/esimUsage/{esimId}": {
+      "schema": "ESIMUsage",
+      "description": "Real-time eSIM data usage"
     }
   }
 }
