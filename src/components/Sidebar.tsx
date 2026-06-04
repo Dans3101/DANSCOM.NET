@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShoppingCart, Smartphone, BarChart2, Phone, CreditCard, User, Briefcase, Users, Gift, HelpCircle, Settings, Sun, Moon, ChevronDown, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Smartphone, BarChart2, Phone, CreditCard, User, Briefcase, Users, Gift, HelpCircle, Settings, Sun, Moon, ChevronDown, ChevronRight, Award } from 'lucide-react';
 import { useState } from 'react';
 
 export const Sidebar = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
@@ -30,6 +30,9 @@ export const Sidebar = ({ activeTab, onTabChange }: { activeTab: string, onTabCh
     },
     { 
       name: 'Business', icon: Briefcase, subItems: ['Account management', 'Company profile', 'Bulk eSIM purchases', 'Team management', 'Business invoices', 'API access', 'Expense tracking', 'Corporate plans'] 
+    },
+    { 
+      name: 'Reseller Platform', icon: Award, subItems: ['Reseller Dashboard', 'White-Label Setup', 'Revenue Config', 'Partner Programs'] 
     },
     { 
       name: 'Team', icon: Users, subItems: ['Invite members', 'Assign roles', 'Permissions', 'Activity logs', 'User access', 'Team performance'] 

@@ -13,6 +13,7 @@ import { CallsSMSView } from './components/views/CallsSMSView';
 import { PaymentsView } from './components/views/PaymentsView';
 import { ProfileView } from './components/views/ProfileView';
 import { BusinessView } from './components/views/BusinessView';
+import { ResellerView } from './components/views/ResellerView';
 import { TeamView } from './components/views/TeamView';
 import { ReferralsView } from './components/views/ReferralsView';
 import { SupportView } from './components/views/SupportView';
@@ -52,6 +53,9 @@ export default function App() {
 
     const businessTabs = ['Business', 'Account management', 'Company profile', 'Bulk eSIM purchases', 'Team management', 'Business invoices', 'API access', 'Expense tracking', 'Corporate plans'];
     if (businessTabs.includes(activeTab)) return <BusinessView activeTab={activeTab} />;
+
+    const resellerTabs = ['Reseller Platform', 'White-Label Setup', 'Reseller Dashboard', 'Revenue Config', 'Partner Programs', 'Partner Types', 'Custom domain support', 'Custom logos', 'Commission tracking', 'Automatic payouts', 'Commission management'];
+    if (resellerTabs.includes(activeTab)) return <ResellerView activeTab={activeTab} />;
 
     const teamTabs = ['Team', 'Invite members', 'Assign roles', 'Permissions', 'Activity logs', 'User access', 'Team performance'];
     if (teamTabs.includes(activeTab)) return <TeamView activeTab={activeTab} />;
