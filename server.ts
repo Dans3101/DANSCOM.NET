@@ -20,24 +20,67 @@ async function startServer() {
   // API routes
   app.get("/api/health", (req, res) => { res.json({ status: "ok" }); });
 
+  app.get("/api/dashboard", (req, res) => {
+    res.json({
+      stats: { activeEsims: 3, dataUsed: 12.5, expiryInDays: 2, wallet: 24.50 },
+      esims: [
+        { id: '1', country: 'France', data: 7.2, total: 10, validity: '30 Days', status: 'Active', expiry: '2025-06-05' },
+        { id: '2', country: 'United States', data: 2.1, total: 5, validity: '15 Days', status: 'Active', expiry: '2025-06-09' },
+        { id: '3', country: 'Turkey', data: 1.2, total: 3, validity: '7 Days', status: 'Active', expiry: '2025-06-04' },
+      ],
+      quickActions: [
+        { id: '1', name: 'Buy eSIM' },
+        { id: '2', name: 'Top Up' },
+        { id: '3', name: 'Send eSIM' },
+        { id: '4', name: 'Add Number' },
+        { id: '5', name: 'Help Center' },
+        { id: '6', name: 'Invite Friends' },
+      ],
+      dataUsage: [
+        { name: 'France', value: 7.2 },
+        { name: 'United States', value: 2.1 },
+        { name: 'Turkey', value: 1.2 },
+        { name: 'Other', value: 2.0 },
+      ],
+      recentTransactions: [
+        { id: '1', title: 'eSIM - France 10GB', date: '2025-05-10', amount: -22.90, status: 'Completed' },
+        { id: '2', title: 'Top Up Wallet', date: '2025-05-09', amount: 50.00, status: 'Completed' },
+        { id: '3', title: 'eSIM - USA 5GB', date: '2025-05-08', amount: -15.90, status: 'Completed' },
+      ]
+    });
+  });
+
   app.post("/api/recommend-plans", async (req, res) => {
     const { plans, userUsage } = req.body;
+    
+    async function generateWithRetry(prompt: string, retries = 3): Promise<string> {
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-1.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          },
+        });
+        return response.text!;
+      } catch (error) {
+        if (retries > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return generateWithRetry(prompt, retries - 1);
+        }
+        throw error;
+      }
+    }
     
     try {
       const prompt = `Based on the following user usage patterns: ${JSON.stringify(userUsage)}, recommend the best 3 plans from this list: ${JSON.stringify(plans)}. Return ONLY a JSON list of plan IDs.`;
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-        },
-      });
+      const responseText = await generateWithRetry(prompt);
       
-      res.json(JSON.parse(response.text!));
+      res.json(JSON.parse(responseText));
     } catch (error) {
       console.error("Error recommending plans:", error);
-      res.status(500).json({ error: "Failed to get recommendations" });
+      res.status(503).json({ error: "Gemini is busy, please try again." });
     }
   });
 
