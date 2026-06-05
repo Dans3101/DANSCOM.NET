@@ -2,15 +2,13 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
 
 // Lazy initialization
 let ai: GoogleGenAI | null = null;
 function getAiClient(): GoogleGenAI {
   if (!ai) {
     if (!process.env.GEMINI_API_KEY) {
-      console.warn("GEMINI_API_KEY is not set.");
-      // Return a dummy client or null, and handle nulls later.
-      // For now, let's keep it simple: throw a helpful error when used.
       throw new Error('GEMINI_API_KEY environment variable is required');
     }
     ai = new GoogleGenAI({
@@ -26,12 +24,9 @@ function getAiClient(): GoogleGenAI {
 }
 
 async function startServer() {
-  console.log("Starting server...");
   const app = express();
   app.use(express.json());
   const PORT = Number(process.env.PORT) || 3000;
-  
-  console.log("Environment:", process.env.NODE_ENV);
 
   // API routes
   app.get("/api/health", (req, res) => { res.json({ status: "ok" }); });
@@ -73,7 +68,7 @@ async function startServer() {
       try {
         const aiClient = getAiClient();
         const response = await aiClient.models.generateContent({
-          model: "gemini-1.5-flash",
+          model: "gemini-flash-latest",
           contents: prompt,
           config: {
             responseMimeType: "application/json",
@@ -97,7 +92,7 @@ async function startServer() {
       res.json(JSON.parse(responseText));
     } catch (error) {
       console.error("Error recommending plans:", error);
-      res.status(503).json({ error: "Gemini is busy, please try again." });
+      res.status(500).json({ error: "Gemini is busy, please try again." });
     }
   });
 
@@ -110,8 +105,6 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    console.log("Serving static from:", distPath);
-    console.log("Files:", require('fs').readdirSync(distPath));
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));

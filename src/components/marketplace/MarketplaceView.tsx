@@ -3,6 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { Plan } from '../../types';
 import { Search, Filter, Sparkles, Loader2 } from 'lucide-react';
+import { CoverageMap } from './CoverageMap';
 
 export const MarketplaceView = () => {
     const [plans, setPlans] = useState<Plan[]>([]);
@@ -62,6 +63,9 @@ export const MarketplaceView = () => {
                   AI Recommendations
                 </button>
             </div>
+            
+            <CoverageMap plans={plans} />
+
             <div className="flex gap-4 mb-6">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-s" size={18} />
