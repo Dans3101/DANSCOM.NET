@@ -20,6 +20,7 @@ import { SupportView } from './components/views/SupportView';
 import { SettingsView } from './components/views/SettingsView';
 import { useAuth } from './contexts/AuthContext';
 import { AuthScreen } from './components/AuthScreen';
+import { InstallAppPrompt } from './components/InstallAppPrompt';
 import bgImage from './assets/dashboard_bg.png';
 
 export default function App() {
@@ -86,6 +87,7 @@ export default function App() {
       <main className="flex-1">
         {renderContent()}
       </main>
+      <InstallAppPrompt />
     </div>
   );
 }
