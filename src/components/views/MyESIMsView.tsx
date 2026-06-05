@@ -24,8 +24,14 @@ export const MyESIMsView = ({ activeTab }: { activeTab?: string }) => {
   
   // Modals / Details Target
   const [selectedQrEsim, setSelectedQrEsim] = useState<eSIMRecord | null>(null);
+  const [installationTab, setInstallationTab] = useState<'qr' | 'ios' | 'android'>('qr');
   const [editEsim, setEditEsim] = useState<eSIMRecord | null>(null);
   const [tempName, setTempName] = useState('');
+
+  // Reset tab when modal opens
+  useEffect(() => {
+    if (selectedQrEsim) setInstallationTab('qr');
+  }, [selectedQrEsim]);
 
   useEffect(() => {
     if (activeTab === 'Expired eSIMs') {
@@ -207,23 +213,47 @@ export const MyESIMsView = ({ activeTab }: { activeTab?: string }) => {
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
           <div className="bg-bg-card border border-border-custom rounded-2xl p-8 max-w-sm w-full space-y-6 text-center">
             <div>
-              <h3 className="font-bold text-xl">{selectedQrEsim.country} Installation QR</h3>
-              <p className="text-text-s text-xs mt-1">Please scan using your iPhone / Android cellular settings menu.</p>
+              <h3 className="font-bold text-xl">{selectedQrEsim.country} Setup</h3>
+              <div className="flex justify-center gap-2 mt-4 bg-neutral-900 p-1 rounded-lg">
+                <button onClick={() => setInstallationTab('qr')} className={`px-3 py-1 rounded text-xs font-bold ${installationTab === 'qr' ? 'bg-accent text-white' : 'text-text-s'}`}>QR</button>
+                <button onClick={() => setInstallationTab('ios')} className={`px-3 py-1 rounded text-xs font-bold ${installationTab === 'ios' ? 'bg-accent text-white' : 'text-text-s'}`}>iOS</button>
+                <button onClick={() => setInstallationTab('android')} className={`px-3 py-1 rounded text-xs font-bold ${installationTab === 'android' ? 'bg-accent text-white' : 'text-text-s'}`}>Android</button>
+              </div>
             </div>
             
-            <div className="aspect-square bg-white p-4 rounded-xl max-w-44 mx-auto border border-border-custom">
-              {/* Clean high contrast simulated QR rendering */}
-              <div className="w-full h-full bg-gradient-radial from-neutral-900 to-black rounded-lg flex items-center justify-center text-white text-[10px] font-mono select-none">
-                [ SEC-QR-TOKEN ]
+            {installationTab === 'qr' && (
+              <div className="space-y-4">
+                <div className="aspect-square bg-white p-4 rounded-xl max-w-44 mx-auto border border-border-custom">
+                  <div className="w-full h-full bg-gradient-radial from-neutral-900 to-black rounded-lg flex items-center justify-center text-white text-[10px] font-mono select-none">
+                    [ SEC-QR-TOKEN ]
+                  </div>
+                </div>
+                <div className="text-xs text-text-s border-t border-border-custom pt-4 text-left space-y-2">
+                  <p>Manual details:</p>
+                  <div className="p-2 bg-neutral-900 rounded font-mono text-[9px] truncate selection:bg-accent border border-border-custom">
+                    SM-DP+ Server: rsp.danscom.net
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="text-xs text-text-s border-t border-border-custom pt-4 text-left space-y-2">
-              <p>Manual details allocation:</p>
-              <div className="p-2 bg-neutral-900 rounded font-mono text-[9px] truncate selection:bg-accent border border-border-custom">
-                SM-DP+ Server: rsp.danscom.net
+            {installationTab === 'ios' && (
+              <div className="text-left text-xs text-text-p space-y-2 max-h-64 overflow-y-auto">
+                <p>1. Go to <strong>Settings</strong> &gt; <strong>Cellular</strong>.</p>
+                <p>2. Tap <strong>Add eSIM</strong>.</p>
+                <p>3. Choose <strong>Use QR Code</strong>.</p>
+                <p>4. Scan the QR code shown here or enter details manually.</p>
               </div>
-            </div>
+            )}
+
+            {installationTab === 'android' && (
+              <div className="text-left text-xs text-text-p space-y-2 max-h-64 overflow-y-auto">
+                <p>1. Go to <strong>Settings</strong> &gt; <strong>Network & Internet</strong>.</p>
+                <p>2. Tap <strong>SIMs</strong> &gt; <strong>Add SIM</strong>.</p>
+                <p>3. Select <strong>Download a SIM instead?</strong>.</p>
+                <p>4. Point camera to scan QR or enter details manually.</p>
+              </div>
+            )}
 
             <button 
               onClick={() => setSelectedQrEsim(null)}
