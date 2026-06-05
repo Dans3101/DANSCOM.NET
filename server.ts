@@ -26,9 +26,12 @@ function getAiClient(): GoogleGenAI {
 }
 
 async function startServer() {
+  console.log("Starting server...");
   const app = express();
   app.use(express.json());
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
+  
+  console.log("Environment:", process.env.NODE_ENV);
 
   // API routes
   app.get("/api/health", (req, res) => { res.json({ status: "ok" }); });
@@ -107,6 +110,8 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
+    console.log("Serving static from:", distPath);
+    console.log("Files:", require('fs').readdirSync(distPath));
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
