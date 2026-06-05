@@ -4,8 +4,13 @@ import { db } from '../../lib/firebase';
 import { Plan } from '../../types';
 import { Search, Filter, Sparkles, Loader2 } from 'lucide-react';
 import { CoverageMap } from './CoverageMap';
+import { ErrorBoundary } from '../ErrorBoundary';
 
-export const MarketplaceView = () => {
+interface MarketplaceViewProps {
+    activeTab?: string;
+}
+
+export const MarketplaceView = ({ activeTab }: MarketplaceViewProps) => {
     const [plans, setPlans] = useState<Plan[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('');
@@ -64,7 +69,9 @@ export const MarketplaceView = () => {
                 </button>
             </div>
             
-            <CoverageMap plans={plans} />
+            <ErrorBoundary>
+                <CoverageMap plans={plans} />
+            </ErrorBoundary>
 
             <div className="flex gap-4 mb-6">
                 <div className="relative flex-1">
