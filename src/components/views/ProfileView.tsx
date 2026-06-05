@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Shield, Smartphone, Globe, Bell, Lock, Key, CheckCircle } from 'lucide-react';
 import { db, auth } from '../../lib/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../../lib/firebaseError';
 
 export const ProfileView = ({ activeTab }: { activeTab: string }) => {
@@ -60,16 +60,16 @@ export const ProfileView = ({ activeTab }: { activeTab: string }) => {
     const uid = auth.currentUser.uid;
     setLoading(true);
     try {
-      await updateDoc(doc(db, 'users', uid), {
+      await setDoc(doc(db, 'users', uid), {
         displayName: fullName,
         phoneNumber: phoneNumber,
         country: country,
         language: lang,
-      });
+      }, { merge: true });
       alert('Your configuration profile has been synchronized with Firestore.');
       setCurrentSub('Personal info');
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `/users/${uid}`);
+      handleFirestoreError(err, OperationType.WRITE, `/users/${uid}`);
     } finally {
       setLoading(false);
     }
