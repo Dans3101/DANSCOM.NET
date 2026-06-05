@@ -1,40 +1,44 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
+    }
+  }
+});
 
 async function startServer() {
   const app = express();
+  app.use(express.json());
   const PORT = 3000;
 
-  // API routes FIRST
-  app.get("/api/dashboard", (req, res) => {
-    res.json({
-      stats: { activeEsims: 3, dataUsed: 12.5, expiryInDays: 2, wallet: 24.50 },
-      esims: [
-        { id: '1', country: 'France', data: 7.2, total: 10, validity: '30 Days', status: 'Active', expiry: '2025-06-05' },
-        { id: '2', country: 'United States', data: 2.1, total: 5, validity: '15 Days', status: 'Active', expiry: '2025-06-09' },
-        { id: '3', country: 'Turkey', data: 1.2, total: 3, validity: '7 Days', status: 'Active', expiry: '2025-06-04' },
-      ],
-      quickActions: [
-        { id: '1', name: 'Buy eSIM' },
-        { id: '2', name: 'Top Up' },
-        { id: '3', name: 'Send eSIM' },
-        { id: '4', name: 'Add Number' },
-        { id: '5', name: 'Help Center' },
-        { id: '6', name: 'Invite Friends' },
-      ],
-      dataUsage: [
-        { name: 'France', value: 7.2 },
-        { name: 'United States', value: 2.1 },
-        { name: 'Turkey', value: 1.2 },
-        { name: 'Other', value: 2.0 },
-      ],
-      recentTransactions: [
-        { id: '1', title: 'eSIM - France 10GB', date: '2025-05-10', amount: -22.90, status: 'Completed' },
-        { id: '2', title: 'Top Up Wallet', date: '2025-05-09', amount: 50.00, status: 'Completed' },
-        { id: '3', title: 'eSIM - USA 5GB', date: '2025-05-08', amount: -15.90, status: 'Completed' },
-      ]
-    });
+  // API routes
+  app.get("/api/health", (req, res) => { res.json({ status: "ok" }); });
+
+  app.post("/api/recommend-plans", async (req, res) => {
+    const { plans, userUsage } = req.body;
+    
+    try {
+      const prompt = `Based on the following user usage patterns: ${JSON.stringify(userUsage)}, recommend the best 3 plans from this list: ${JSON.stringify(plans)}. Return ONLY a JSON list of plan IDs.`;
+      
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+      
+      res.json(JSON.parse(response.text!));
+    } catch (error) {
+      console.error("Error recommending plans:", error);
+      res.status(500).json({ error: "Failed to get recommendations" });
+    }
   });
 
   // Vite middleware for development
