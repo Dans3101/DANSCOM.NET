@@ -3,14 +3,27 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+// Lazy initialization
+let ai: GoogleGenAI | null = null;
+function getAiClient(): GoogleGenAI {
+  if (!ai) {
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn("GEMINI_API_KEY is not set.");
+      // Return a dummy client or null, and handle nulls later.
+      // For now, let's keep it simple: throw a helpful error when used.
+      throw new Error('GEMINI_API_KEY environment variable is required');
     }
+    ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   }
-});
+  return ai;
+}
 
 async function startServer() {
   const app = express();
@@ -55,7 +68,8 @@ async function startServer() {
     
     async function generateWithRetry(prompt: string, retries = 3): Promise<string> {
       try {
-        const response = await ai.models.generateContent({
+        const aiClient = getAiClient();
+        const response = await aiClient.models.generateContent({
           model: "gemini-1.5-flash",
           contents: prompt,
           config: {
